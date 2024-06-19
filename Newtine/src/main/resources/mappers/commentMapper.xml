@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newtine.model.dao.CommentDao">
+
+	<select id="getCommentList" parameterType="int"
+		resultType="CommentDto">
+		SELECT * FROM comments
+		WHERE review_no = #{reviewNo}
+	</select>
+
+	<select id="selectCommentById" parameterType="int"
+		resultType="CommentDto">
+		SELECT * FROM comments
+		WHERE comment_no = #{commentNo}
+	</select>
+
+	<insert id="insertComment" parameterType="CommentDto">
+		INSERT INTO comments (review_no, user_no, comment_content, comment_date)
+		VALUES (#{reviewNo}, #{userNo}, #{commentContent}, sysdate())
+	</insert>
+
+	<update id="updateComment" parameterType="CommentDto">
+		UPDATE comments
+		SET comment_content = #{commentContent}, comment_date = sysdate()
+		WHERE comment_no = #{commentNo}
+	</update>
+
+	<delete id="deleteComment" parameterType="int">
+		DELETE FROM comments
+		WHERE comment_no = #{commentNo}
+	</delete>
+
+</mapper>

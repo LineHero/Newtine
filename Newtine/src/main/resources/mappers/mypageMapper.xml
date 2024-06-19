@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newtine.model.dao.MypageDao">
+
+	<select id="getmybodyprofile" parameterType="int" resultType="BodyprofileDto">
+		SELECT * FROM bodyprofile WHERE user_no = #{userno} ORDER BY measure_date DESC
+	</select>
+	
+	<select id="getmystreak" parameterType="int" resultType="StreakDto">
+		SELECT * FROM streak WHERE user_no = #{userno} ORDER BY health_date DESC
+	</select>
+	
+	<select id="getuserbyid" parameterType="String" resultType="UserDto">
+		SELECT * FROM users WHERE user_id = #{userId}
+	</select>
+	
+	<select id="getuserbyno" parameterType="int" resultType="UserDto">
+		SELECT * FROM users WHERE user_no = #{userNo}
+	</select>
+	
+	<update id="updateuser" parameterType="UserDto">
+		UPDATE users
+		SET user_profile_fileid = #{userProfileFileId}, user_profile_filename = #{userProfileFileName}
+		WHERE user_no = #{userNo}
+	</update>
+	
+	<select id="getmyprofileimg" parameterType="String" resultType="String">
+		SELECT user_profile_fileid FROM users WHERE user_id = #{userId}
+	</select>
+	
+	<select id="getmyfollowlist" parameterType="int" resultType="UserfollowlistDto">
+		SELECT * FROM userfollowlist WHERE user_no = #{userNo}
+	</select>
+	
+	<delete id="unfollow" parameterType="map">
+		DELETE FROM userfollowlist WHERE follow_user_no = #{unfolUserno} AND user_no = #{loginUserno}
+	</delete>
+	
+	<insert id="dofollow" parameterType="map">
+	    INSERT INTO userfollowlist (follow_user_no, user_no)
+	    VALUES (#{dofolUserno}, #{loginUserno})
+	</insert>	
+	
+	<select id="getmylistformypage" parameterType="int" resultType="MylistDto">
+		SELECT * FROM mylist WHERE user_no = #{id}
+	</select>
+	
+	<insert id="insertbodyprofile" parameterType="BodyprofileDto">
+		INSERT INTO bodyprofile (measure_date, user_no, weight, muscle_mass, skeletal_muscle_mass, bodyfat_percentage, height)
+		VALUES (#{measureDate}, #{userNo}, #{weight}, #{muscleMass}, #{skeletalmuscleMass}, #{bodyfatPercentage}, 160)
+	</insert>
+	
+	<delete id="deletemylist" parameterType="int">
+		DELETE FROM mylist WHERE list_no = #{listNo};
+	</delete>
+	
+</mapper>

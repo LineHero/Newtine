@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newtine.model.dao.MylistDao">
+
+	<select id="getAllmylist" parameterType="hashMap" resultType="MylistDto">
+	  SELECT *
+	  FROM mylist
+	  <choose>
+	  	<when test="part != 0">
+	  		WHERE list_part = #{part}
+	  	</when>
+	  	<when test="isofficial != 0">
+	  		<if test="isofficial == 1">
+	  			WHERE list_isofficial = 1
+	  		</if>
+	  		<if test="isofficial == 2">
+	  			WHERE list_isofficial = 0
+	  		</if>
+	  	</when>
+	  </choose>
+	  ORDER BY list_no DESC LIMIT 10 OFFSET 
+	  <if test="offset != null">
+	  	<if test="offset == 0">
+	  		0
+	  	</if>
+		<if test="offset != 0">
+			  ${offset}
+		</if>
+	  </if>
+	</select>
+	
+	<select id="getlistdetail" parameterType="int" resultType="MylistDto">
+		SELECT * FROM mylist WHERE list_no = #{id}
+	</select>
+	
+	
+	<select id="searchmylist" parameterType="SearchConditionDto" resultType="MylistDto">
+		SELECT * FROM mylist WHERE list_title LIKE concat('%', #{searchquery}, '%')
+		ORDER BY list_no DESC LIMIT 10 OFFSET #{page}
+	</select>
+	
+	<insert id="insertMylist" parameterType="MylistDto" useGeneratedKeys="true" keyProperty="listNo">
+		INSERT INTO mylist (user_no, list_title, list_exp, list_rate, list_part, list_time, list_place, list_viewcnt, list_isofficial)
+		VALUES (#{userNo}, #{listTitle}, #{listExp}, 0, #{listPart}, #{listTime}, #{listPlace}, 0, 0)
+	</insert>
+	
+	<insert id="insertMylistDetail" parameterType="ListdetailDto">
+		INSERT INTO listdetail (list_no, video_no)
+		VALUES (#{listNo}, #{videoNo})
+	</insert>
+	
+	<select id="getAllLists" resultType = "MylistDto">
+		select * from mylist
+	</select>
+	
+	<!-- MylistDao.xml -->
+
+	<update id="increaseListViewCount" parameterType="int">
+	    UPDATE mylist
+	    SET list_viewcnt = list_viewcnt + 1
+	    WHERE list_no = #{listNo}
+	</update>
+	
+	<select id="getAllListVideos" parameterType="int" resultType="ListdetailDto">
+		select * from listdetail WHERE list_no = #{listNo}
+	</select>
+	
+	<select id="getrecommend" parameterType="map" resultType="MylistDto">
+		SELECT * FROM mylist WHERE list_time = #{time} AND list_part = #{part} AND list_place = #{place} AND list_isofficial = 1
+	</select>
+	
+	<update id="insertMylisturl" parameterType="UrlDto">
+		UPDATE mylist SET list_url = #{url} WHERE list_no = #{userno}
+	</update>
+	
+	<update id="updateRate">
+    	UPDATE mylist
+    	SET list_rate = (
+        	SELECT AVG(review_rate)
+        	FROM reviews
+        	WHERE reviews.list_no = mylist.list_no
+    	)
+    	WHERE EXISTS (
+        	SELECT 1
+        	FROM reviews
+        	WHERE reviews.list_no = mylist.list_no
+    	);
+	</update>
+
+	
+</mapper>
